@@ -1,0 +1,31 @@
+
+참고. 서블릿 동작 과정
+
+1. 클라이언트가 웹 서버에 요청하면 웹 서버는 동적인지 정적인지 판단을 한다. 이때 정적이면 웹 서버가 처리, 아닐경우 WAS에 위임을 한다.
+2. WAS는 각 요청에 해당하는 서블릿을 실행. 그리고 서블릿은 요청 기능을 수행하여 결과를 반환
+3. 반환된 결과를 클라이언트가 실행
+
+참고. 서블릿 기본 기능 수행 과정
+
+1. 클라이언트로부터 요청을 받아 비즈니스 로직을 처리하고, 그 결과를 다시 클라이언트에 돌려주는 과정입니다.
+2. 데이버베이스 연동과 같은 비즈니스 로직을 처리합니다.
+3. 처리된 결과를 클라이언트에게 돌려줍니다.
+
+참고. Get / Post 방식
+1. GET
+  a. 데이터를 전송할 때는 데이터가 URL 뒤에 name=value 형태로 전송됩니다.
+2. POST
+  a. TCP/IP 프로토콜 데이터의 HEAD 영역에 숨겨진 채 전송된다.
+  b. 전송속도가 느리다.
+  
+  
+참고. 자바스크립트로 서블릿에 요청하기
+```
+var famLogin = document.frmLogin;
+var user_id = frmLogin.user_id.value; //굳이 필요는 없다
+var user_pw = fmmLogin.user_pw.value;
+
+frmLogin.method = "post";             //전송 방식이 POST
+frmLogin.action = "login5";           //서블릿 매핑 이름이 login5
+frmLogin.submit();                    //서블릿으로 전송
+```
