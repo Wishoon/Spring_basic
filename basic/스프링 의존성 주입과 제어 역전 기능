@@ -1,0 +1,52 @@
+1. 의존성 주입하기
+  a. 의존성 주입을 사용하기 전 게시판 기능
+  
+    controller에서 직접 service객체를 생성 -> service객체에서 직접 dao객체를 생성 -> dao객체 명시된 oracle db와 연결
+    
+    이와 같이 중간에 db가 MYSQL로 바뀐다고 하면 dao에 있는 코드들을 전부 바꿔줘야 하는 문제가 발생한다.
+    
+    즉, 결론적으로 대용량의 프로젝트에서는 이렇게 직접 코드를 생성하는 것이 복잡한 문제를 발생시킬 수 있다. 
+  
+  b. 인터페이스를 적용한 게시판 기능
+  
+    위 문제점을 해결 하기 위해서 인터페이슬 사용해서 해결해 본다.
+    
+    public class BoardServiceImpl implements BoardService {
+    
+      BoardDAO boardDAO;
+      
+      public BoardService() {
+          boardDAO = new BoardOracleDAOImpl();  // 인터페이스를 이용해 하위 클래스 객체를 생성한 후 오라클 db와 연결
+      }
+    }
+    
+    여기서 MYSQL DB로 변경 하게 될 경우 
+    
+    public class BoardServiceImpl implements BoardService {
+    
+      BoardDAO boardDAO;
+      
+      public BoardService() {
+          // boardDAO = new BoardOracleDAOImpl();  // 인터페이스를 이용해 하위 클래스 객체를 생성한 후 오라클 db와 연결
+          boardDAO = new BoardMYSQLDAOImpl();      // 인터페이스를 이용해 하위 클래스 객체를 생성한 후 mysql db와 연결     
+      }
+    }
+    
+    ----> 그러나 역시 BoardServiceImpl 클래스 내부에서 코드를 수정해줘야 한다.
+    
+    c. 의존성 주입을 적용한 게시판 기능
+    -> 스프링에서 DI를 구현하려면 XML이나 어노테이션을 이용해 객체를 주입하여 의존 관계를 이어준다.
+    즉, 개발자가 직접 설정하는 것이 아니라 스프링 프레임워크가 제어를 하게 된다. 즉, 이런 것을 제어의 역전(Ioc)라고 부른다.
+    
+    예시를 들어보면
+    
+    public class BoardServiceImpl implements BoardService {
+      private BoardDAO boardDAO;
+      
+      public BoardServiceImpl (BoardDAO boardDAO){
+        this.boardDAO = boardDAO;
+      }
+    }
+    
+    -> 위 코드는 객체를 생성하는 new연산자가 없다. 생성자를 호출할 때 외부에서 객체를 주입 받아 사용하는 경우이다. 생성자 말고도 setter방식이 있다.
+    
