@@ -5,7 +5,7 @@
 2. 웹 애플리케이션 이해하기
 3. 쿠키와 세션 알아보기
 4. [HTML5 와 제이쿼리](https://github.com/Wishoon/Spring_basic/blob/master/basic/%EC%A0%9C%EC%9D%B4%EC%BF%BC%EB%A6%AC%20Ajax%20%EA%B8%B0%EB%8A%A5)
-5. 모델 2 방식으로 개발하기
+5. [모델 2 방식으로 개발하기](https://github.com/Wishoon/Spring_basic/blob/master/basic/MVC%20%EB%94%94%EC%9E%90%EC%9D%B8%20%ED%8C%A8%ED%84%B4)
 6. 스프링 프레임워크 시작하기
 7. 스프링 AOP 기능
 8. 스프링 MVC 기능
