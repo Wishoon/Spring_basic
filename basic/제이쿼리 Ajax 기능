@@ -1,0 +1,133 @@
+1. 온라인 쇼핑몰에서 회원 가입을 하려면 먼저 ID 중복 여부부터 체크한다. 이때 기본의 화면 위에 중복 ID 여부만 확인하는 새로운 창이 나오는
+경우를 볼 수가 있다. 이처럼 클라이언트 측에서의 작업과는 상관없이 비동기적으로 서버와 작업을 수행할 때 'Ajax 기능을 사용한다'.
+
+2. Ajax란 (비동기 자바스크립트 + xml의 의미) 자바스크립트를 사용한 비동기 통신, 즉 클라이언트와 서버 간의 xml이나 JSON 데이터를 주고 받는 기술을 
+의미한다. 
+
+  기존의 웹 페이지 동작 방식: 요청 페이지 -> 웹 서버 -> 결과 페이지
+  Ajax 웹 페이지 동작 방식: 요청 페이지 -> 웹 서버 -> 요청 페이지
+
+3. 제이쿼리 Ajax 사용법
+
+  $.ajax({
+    type= "post",
+    url: "요쳥할 url",
+    data: {서버로 전송할 데이터 },
+    dataType: "서버에서 전송받을 데이터형식",
+    success:{
+      //정상 요청, 응답 시 처리
+    },
+    error: function(){
+      //오류 발생 시 처리
+    }
+   });
+ 
+4. 제이쿼리에서 JSON 사용하기
+
+-> JSON이란? : Javascript object Notation으로 key/value 쌍으로 이루어진 데이터 객체를 전달하기 위해 인간이 읽을 수 있는 텍스트를 사용하는
+개방형 표준 데이터 형식. 비동기 브라우저/서버 통신을 위해 XML을 대체하는 데이터 전송 형식 중 하나라고 이해하면 된다.
+  
+  A. JSON 자료형 사용 실습
+    
+    <script>
+      $(function () {
+        $("checkJson").click(function () {
+          var jsonStr = '{ "name" : ["홍길동", "이순신", "임꺽정"]}';
+          var jsonInfo = JSON.parse(jsonStr);   // 제이쿼리의 JSON 기능인 parse() 메서드를 이용해 JSON 자료형을 가져온다.
+          var output = "회원 이름<br>";
+          output += "======<br>";
+          for (var i in jsonInfo.name) {        // 배열 이름 name으로 배열 요소에 반복 변수를 이용해 차례로 접근하여 값을 가져온다.
+            output += jsonInfo.nanme[i] + "<br>";
+          }
+          $("#output").html(output);
+        }  
+       });
+       
+   B. JSON 자료형 사용 실습 (서버의 서블릿과 JSON 자료를 주고받는 기능) -> jsp 페이지에서 서버로 데이터를 전송
+   
+    // 서블릿 서버
+    @WebServlet("/json")
+    public class JsonServlet1 extends HttpServlet {
+      ...
+      
+      protected void .... {
+        
+        String jsonInfo = request.getParameter("jsonInfo");   //문자열로 전송된 json 데이터를 가져온다.
+        try {
+            JSONParser jsonParser = new JSONParser(); // JSON 데이터를 처리하기 위해 JSONParser 객체를 생성합니다.
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonInfo); // 전송된 JSON 데이터를 파싱한다.
+            
+            syso("* 회원 정보 *");
+            syso(jsonObject.get("name"));
+            syso(jsonObject.get("age"));
+            syso(jsonObject.get("gender"));
+            syso(jsonObject.get("nickname"));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+      }
+    }
+     
+    <script>
+      $(function () {
+        $("#checkJson").click(function() {
+          var _jsonInfo = ' {"name":"박지성", "age":"25", "gender":"남자", "nickname":"날센돌이"}';
+          $.ajax({
+            type:"post",
+            url:"{contextPath}/json",
+            data : {jsonInfo: _jsonInfo},
+            success:function (data, textStatus) {
+            }
+          });
+          
+     C. 서버의 서블릿에서 웹 페이지로 JSON 형식의 회원 정보를 전송
+     
+     //Servlet
+     
+     SONObject totalObject = new JSONObject();  //배열을 저장할 totalObject
+     JSONArray memberArray = new JSONArray();   //memberInfo JSON 객체를 저장할 배열을 선언
+     JSONObject memberInfo = new JSONObject();  //회원 한명의 정보가 들어갈 JSON 객체를 생성
+     
+     memberInfo.put("name", "박지성");
+     memberInfo.put("age", "25");
+     memberInfo.put("gender", "남자");
+     memberInfo.put("nickname", "날센돌이");
+     memberArray.add(memberInfo);               //회원 정보를 다시 memberArray 배열에 저장
+   
+     totalObject.put("members", membersArray);  //totalObject에 members라는 name으로 membersArray를 value로 저장한다.
+     
+     String jsonInfo = totalObject.toJSONString();    //JSONObject를 문자열로 변한한다.
+     
+     writer.print(jsonInfo);                    //JSON 데이터를 브라우저로 전송한다.
+     
+     //JSP
+     
+     <script>
+      $(function () {
+        $("#checkJSON").click(function () {
+          $.ajax({
+            type : "post",
+            url : "${contextPath}/json2",
+            success : function (data, textStatus) {
+              var jsonInfo = JSON.parse(data);        //서버에서 전송한 JSON 데이터를 파싱.
+              var memeberInfo = "회원 정보<br>";
+              memberInfo += "======<br>"; 
+              
+              for(var i in jsonInfo.members){
+                memberInfo += "이름: " + jsonInfo.members[i].name + "<br>";
+                memberInfo += "나이: " + jsonInfo.members[i].age + "<br>";
+                memberInfo += "성별: " + jsonInfo.members[i].gender + "<br>";
+                memberInfo += "별명: " + jsonInfo.members[i].nickname + "<br>";
+              }
+              $("#output").html(memberInfo);
+            },
+            error:function(data, textStatus) {
+              alert("에러가 발생했습니다.");
+            }
+          });
+       </script>
+              
+              
+              
+              
+     
