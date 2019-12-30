@@ -1,0 +1,46 @@
+1. 스프링 어노테이션 제공 클래스
+  DefaultAnnotationHandlerMapping : 클래스 레밸에서 @RequestMapping을 처리
+  AnnotationMethodHandlerMapping : 메서드 레벨에서 @RequestMapping을 처리
+  
+2. <context:component-scan> 
+  위 태그를 사용해 패키지 이름을 지정하면 애플리케이션 실행 시 해당 경로에 지정된 클래스를 빈으로 만들어준다.
+  
+  @Component / @Controller : 컨트롤러 / @Service : 서비스 / @Repository : DAO
+  
+  
+3.1 메서드에 @RequestParam 적용하기
+  지금까지 브라우저에서 매개변수를 전송하면 getParameter() 메서드를 이용해 값을 얻었다.
+  전송 되어 지는 메게변수가 많아 질 경우 힘들다. 그래서 개선된 방법이 @RequestParamd이다.
+  -> public ModelAndView login(@RequestParam("userID") String userID, @RequestParam("userName") String userName, ******)
+  
+3.2 @RequestParam의 required 속성 사용하기
+  로그인과 비밀번호 같은 정보는 반드시 컨트롤러에 전달되어야 한다. required를 이용하면 그것을 설정할 수 있다.
+    a. @RequestParam 적용시 required를 생략하면 기본값은 true다.
+    b. true 일 경우 반드시 지정한 이름의 매개변수를 전달해야 한다.
+    c. false 일 경우 전달 값이 없으면 null을 반환한다.
+
+3.3 @RequestParam을 이용해 Map에 매개변수 값 설정하기
+  매개변수의 수가 많을 경우 일일히 변수를 지정해서 사용하면 불편하다. 그래서 Map에 저장하여 보자.
+  -> public ModelAndView loing3(@RequestParam Map<String, String> info , HttpServletRequest request, HttpServletResponse reponse) throws Exception {
+       
+       ModelAndView mav = new ModelAndView();
+       String userID = info.get("userID");
+       String userName = info.get("userName");  //Map에 저장된 매개변수의 이름으로 전달된 값을 가져온다.
+       
+       mav.addObject("info", info);   //@RequestParam에서 설정한 Map 이름으로 바인딩.
+       
+3.4 @ModelAttribute 이용해 VO에 매개변수 값 설정하기
+  -> 이번에는 여러 개의 매개변수를 전달해 보자. 우선 @ModelAttribute를 이용해 VO 클래스의 속성에 매개변수 값이 자동으로 설정되도록 한다.
+  @ModelAttribute("info") LoginVO loginVO는 전달된 매개변수에 대해 LoginVO 클래스 객체를 생성. 이어서 info라는 이름으로 바인딩을 한다.
+  
+  -> public ModelAndView login4(@ModelAndView("info") LoginVO loginVO ****
+
+3.5 Model 클래스를 이용해 값 전달하기
+  -> public String login5(Model model, ***) {
+      
+      model.addAttribute("userID", "hong");
+      model.addAttribute("userName", "홍길동");
+      
+      return "result";
+    }
+  
